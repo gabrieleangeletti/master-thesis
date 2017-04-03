@@ -1,0 +1,34 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{style}
+\usepackage{subfiles}
+
+\bibliography{./bib/bibliography}
+
+\title{Master Thesis}
+\date{\today}
+\author{Gabriele Angeletti}
+
+\begin{document}
+
+    \pagenumbering{gobble}
+    \maketitle
+    \newpage
+    \tableofcontents
+    \newpage
+    \pagenumbering{arabic}
+
+    \subfile{./tex/01-acknowledgements}
+    \newpage
+    \subfile{./tex/02-abstract}
+    \subfile{./tex/03-introduction}
+    \subfile{./tex/04-related}
+    \subfile{./tex/05-approach}
+    \subfile{./tex/06-experiments}
+    \subfile{./tex/07-comparison}
+    \subfile{./tex/08-conclusion}
+
+    \printbibliography
+    \subfile{./tex/09-appendix}
+
+\end{document}
