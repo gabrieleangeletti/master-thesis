@@ -1,0 +1,29 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+    \chapter{Background}
+    This chapter is a brief overview
+    In this section, we'll review some basic concepts about deep learning
+
+    \section{Domain Adaptation}
+    Problem of dealing with situations in which the training distribution is different from the test distribution.
+    We assume that the source (train) data is abundant and labeled, while the target (test) data is only partially
+    labeled. The joint distribution of data and labels is, of course, unknown. $ P_{s}(X, Y) $ is the joint distribution
+    of source data, while $ P_{t}(X, Y) $ is the joint distribution of the target data. In a standard classification
+    problem, we assume $ P_{s}(X, Y) = P_{t}(X, Y) = P(X, Y) $. In Domain Adaptation instead, we have $ P_{s}(X, Y) \neq P_{t}(X, Y) $.
+    Marginal Distributions: $ P_{s}(X) $, $ P_{s}(Y) $, $ P_{t}(X) $, $ P_{t}(Y) $.
+    Conditional Distributions: $ P_{s}(X | Y) $, $ P_{s}(Y | X) $, $ P_{t}(X | Y) $, $ P_{t}(Y | X) $.
+    If target has labels, we call the problem Supervised Domain Adaptation. If target is unlabeled, we refer to it as Unsupervised Domain
+    Adaptation.
+    One Approach to domain adaptation is that of representation learning, i.e. build a mapping from source representations to target
+    representations so that $ P_{s}(X) $ approaches $ P_{t}(X) $. Many algorithms work with fixed length representations, i.e. they
+    extract (say fc7) features from S and T and then they learn a mapping from one vector to the other in order to near the two
+    representations. Other algorithms instead performs both representation learning and domain adaptation in the same end-to-end
+    learning architecture.
+    Different Approaches to this matching of the feature space distributions are: reweighing the sample in the source domain, find
+    an explicit geometric transformation, modifying the feature representation itself.
+
+    \section{Deep Learning}
+    \subsection{Feed-Forward Neural Networks}
+    \subsection{Convolutional Neural Networks}
+\end{document}

@@ -1,9 +1,9 @@
 \documentclass[../main.tex]{subfiles}
 
 \begin{document}
-    \section{Approach}
+    \chapter{Approach}
 
-    \subsection{Grad-CAM}
+    \section{Grad-CAM}
     Gradient-weighted Class Activation Mapping \cite{gradcam}. Technique for producing visual explanations
     about why a Convolutional Neural Network opted for a certain class. The technique is applicable to a wide
     variety of tasks, ranging from image captioning to visual question answering to reinforcement learning, and
@@ -60,7 +60,25 @@
     is generated from the values and the heatmap is point-wise multiplied with the output of the Guided-BackPropagation procedure
 	\cite{guidedbackprop}, to produce the final result Guided-GradCAM.
 
-    \subsection{Spatial Pyramid Pooling}
+    \subsection{Grad-CAM for domain localization}
 
-    \subsection{Domain-Multiplicative Fusion}
+    \section{Spatial Pyramid Pooling}
+    Convolutional Networks can be thought of as composed by two parts, a feature extractor and a classifier. The former is composed
+    by convolutional layers, while the latter by fully-connected layers, that is simply an affine mapping followed by some non-linearity.
+    Each convolutional layer has three sequential stages: a convolution operation, a pooling operation, and a non-linearity operation.
+    The pooling operation is needed to reduce the dimensionality of the data and to improve robustness with respect to input distortion.
+    Usually, Max Pooling is used. Max pooling is a sliding window in which for each window, the pixel with the max value is taken as output.
+    Spatial Pyramid Pooling is a method that was used extensively in computer vision algorithms before the deep learning revolution.
+    This paper \cite{sppooling} introduced the technique in the context of deep networks. Basically, a Spatial Pyramid Pooling operation
+    it's nothing but multiple Max Pooling ops performed at different window sizes and then concatenated together. This seemingly simple
+    alteration of the standard pooling layer has profound implications, such that:
+    \begin{itemize}
+        \item CNNs with standard Max Pooling layers must take in input images of fixed size (say $224 \times 224$). With SPP instead, the network can take in input images of arbitrary sizes, scales and aspect ratios.
+        \item The network is much more robust to distortions and alterations of the input, because the pooling is done at multiple levels.
+        \item Classification accuracy is increased.
+    \end{itemize}
+
+
+    \section{Domain-Multiplicative Fusion}
+    \subsection{Architecture Design}
 \end{document}
