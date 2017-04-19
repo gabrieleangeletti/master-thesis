@@ -8,8 +8,14 @@
     backend=bibtex,
     style=authoryear
 ]{biblatex}
-\usepackage{hyperref}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage[colorlinks]{hyperref}
 \usepackage{graphicx}
+\usepackage{tabulary}
 
 % Removes {page, chapter} header from each page
 \pagestyle{plain}
+
+% Use footnotes only in the LoF
+\newcommand{\footcaption}[1]{\caption[#1]{#1\footnotemark.}}
