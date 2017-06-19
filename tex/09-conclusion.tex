@@ -2,6 +2,38 @@
 
 \begin{document}
     \chapter{Conclusions}
+    We designed a method to tackle the increasingly important problem of domain adaptation,
+    that is the problem of taking a machine learning classifier trained on a dataset and making it work
+    on a different (but related) dataset, for which no labels are available. We described the foundations
+    upon which our method is built, and state-of-the-art approaches present in the literature. We provided
+    experimental evidence across a range of datasets and network architectures that our method is an
+    improvement over standard architectures, and in some cases also achieved state-of-the-art performance,
+    while using very few parameters with respect to other methods. We argue that our work points out the
+    importance of localizing \textit{domain-generic} and \textit{domain-specific} regions at a representational
+    level, and that the use of this information can make the source representation more similar to the target
+    representation.
+
     \section{Lessons learned}
+    We performed many experiments, and tried lots of approaches, and we learned many things along the way.
+    One thing is that if we carefully tune the dimension of the latest pooling layer, we can achieve much
+    greater performance (in fact, in some settings, we achieve a $10\%$ improvement in test accuracy).
+    Another thing is that with deep learning model the size of the dataset is really a fundamental issue:
+    methods that work well when the dataset is big enough often do not work at all when the dataset is
+    small. One should carefully tune the model capacity with respect to the dataset at hand, because with
+    deep networks, overfitting is often around the corner.
+    We also learned that domain adaptation is a hard problem that is yet to be solved: despite the huge
+    successes that deep learning methods have achieved in computer vision over the last few years, a model
+    trained on one dataset and tested on a different one continues to yield very low performance. Some
+    also argue (ref rethinking generalization) that deep networks do not in fact learn semantically
+    meaningful features, but instead they simply memorize entire datasets. With the advent of deep learning,
+    we traded interpretability for performance, and we still know very little about how these models really work.
+    Much more work needs to be done in deepen our understanding of deep neural networks.
+
     \section{Future work}
+    We think that a promising future direction of this work would be to make the \textit{domainness maps}
+    created by a generative model: that is, by replacing the use of the Grad-CAM procedure with a generative
+    network that is embedded in the network. In this way, instead of having two learning processes that are
+    carried out in a sequential manner, one would have a single end-to-end architecture jointly trained in one
+    step. Besides reducing the computational burden of our method, we also argue that this would increase the
+    quality of the produced maps.
 \end{document}

@@ -1,18 +1,26 @@
-\documentclass[12pt,a4paper]{book}
+\documentclass[12pt,a4paper,oneside]{book}
 
 \usepackage{style}
 \usepackage{subfiles}
 
 \bibliography{./bib/bibliography}
 
-\title{Master Thesis}
-\date{\today}
-\author{Gabriele Angeletti}
-
 \begin{document}
 
     \pagenumbering{gobble}
-    \maketitle
+    \begin{titlepage}
+        \raggedright{\includegraphics[width=0.5\textwidth]{./img/logo-sapienza.png}}
+        \vspace{1cm}
+        \center{\LARGE \color{sapienza} \textbf{Master Thesis} \par}
+        \vspace{3cm}
+        \raggedright{\color{sapienza} Facoltà di Ingegneria Informatica \newline Corso di Laurea Magistrale in Artificial Intelligence and Robotics \par}
+        \vspace{3cm}
+        \raggedright{Candidate \newline Gabriele Angeletti \newline ID number 1459796 \par}
+        \vspace{1cm}
+        \raggedright{Thesis Advisor \newline Prof.\ Caputo \par}
+        \vspace{3cm}
+        \raggedright{Academic Year 2016/2017 \par}
+    \end{titlepage}
     \newpage
     \subfile{./tex/01-acknowledgements}
     \newpage
@@ -28,6 +36,7 @@
         \let\clearpage
     \endgroup
 
+    \subfile{./tex/glossary.tex}
     \subfile{./tex/03-introduction}
     % Start page numbering from the introduction
     \pagenumbering{arabic}
@@ -37,8 +46,7 @@
     \subfile{./tex/07-experiments}
     \subfile{./tex/08-comparison}
     \subfile{./tex/09-conclusion}
-
-    \printbibliography
+    \printbibliography{}
     \subfile{./tex/10-appendix}
 
 \end{document}

@@ -2,4 +2,29 @@
 
 \begin{document}
     \chapter{Comparison}
+    In the ICW dataset, our method was able to achieve state-of-the-art performance with respect to the
+    Domain-Adversarial Neural Network (DANN). This was due in part to the fact that we discovered that greater
+    performance can be achieved by carefully tuning the dimension of the last pooling layer, and in part to
+    the improvement of the DMF that was capable of providing a representation to the higher layers in which
+    the two domains where made more similar. We also argue that tuning the dimension of the latest pooling layer
+    can be an effective way of incorporating \textit{prior knowledge} about the dataset at hand. For instance, if
+    we know that the object will cover the majority of the image and there will not be much noise, we can go with a
+    smaller window size to identify more details of the object. Conversely, if the object is but a small part of the
+    image, and there is a lot of noise, like background etc., a bigger window size might be appropriate, in order to
+    perform disturbance rejection.
+    \newline
+    Another thing we noted during our experiments, that is related to the previous point is that DMF needs the dimension
+    of the last pooling layer to be carefully tuned. In particular, we noted that if this is not the case, than the DMF
+    extension to the original architecture is not always able to provide an improvement in terms of performance. Also,
+    source and target domains need to be \textit{different but related}. We tested our method with domains for which the
+    domain shift was very large, and our method performed poorly. However, this is also true for the other state-of-the-art
+    methods for domain adaptation.
+    \newline
+    Another point of comparison with the state-of-the-art regards the size of the model: that is, the number of parameters.
+    The DMF architecture has a much smaller number of parameters w.r.t.\ DANN\@.
+    If we take for example the AlexNet architecture, which DANN authors extended in their paper, the number of parameters is huge,
+    in the order of 70 million parameters only in the fully-connected part of the architecture. The DMF architecture that we employed
+    was about 13 million parameters in the fully-connected part, that is about a fifth. This leads to a much lesser memory consumption
+    and greater efficiency from a computational view-point. These are important considerations given the ever growing size of deep
+    learning models and from an industry perspective.
 \end{document}

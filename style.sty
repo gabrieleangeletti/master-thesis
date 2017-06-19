@@ -10,13 +10,23 @@
 ]{biblatex}
 \usepackage{bm}
 \usepackage{booktabs}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage[colorlinks]{hyperref}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\usepackage{mathtools}
 \usepackage{tabulary}
+\usepackage[hyphens]{url}
+
+% University main color
+\definecolor{sapienza}{HTML}{822433}
 
 % Removes {page, chapter} header from each page
 \pagestyle{plain}
 
 % Use footnotes only in the LoF
 \newcommand{\footcaption}[1]{\caption[#1]{#1\footnotemark.}}
+
+% Ceil and Floor
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
