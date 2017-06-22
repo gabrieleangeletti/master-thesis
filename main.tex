@@ -7,7 +7,7 @@
 
 \begin{document}
 
-    \pagenumbering{gobble}
+\frontmatter{}
     \begin{titlepage}
         \raggedright{\includegraphics[width=0.5\textwidth]{./img/logo-sapienza.png}}
         \vspace{1cm}
@@ -24,27 +24,21 @@
     \end{titlepage}
     \newpage
     \subfile{./tex/01-abstract}
-    \pagenumbering{roman}
-
-    % This group removes blank pages
-    \begingroup
-        \let\cleardoublepage\clearpage
-        \tableofcontents
-        \listoffigures
-        \listoftables
-        \let\clearpage
-    \endgroup
-
+    \tableofcontents
+    \listoftables
+    \listoffigures 
     \subfile{./tex/glossary.tex}
+
+\mainmatter{}
     \subfile{./tex/02-introduction}
-    % Start page numbering from the introduction
-    \pagenumbering{arabic}
     \subfile{./tex/03-background}
     \subfile{./tex/04-related}
     \subfile{./tex/05-approach}
     \subfile{./tex/06-experiments}
     \subfile{./tex/07-comparison}
     \subfile{./tex/08-conclusion}
+
+\backmatter{}
     \printbibliography{}
     \subfile{./tex/09-appendix}
 
