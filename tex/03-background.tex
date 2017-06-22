@@ -3,88 +3,115 @@
 \begin{document}
     \chapter{Background}\label{chap:background}
 
-    This chapter provides a brief overview of the problems addressed in this work, as well as the main
-    technologies upon which our approach is designed.
-    Section~\ref{sec:domainadapt} is a description of the domain adaptation problem in the context
-    of machine learning, in which the main challenges of the field are highlighted.
+    This chapter provides an overview of the problems addressed in this thesis work, as well as the main
+    technologies upon which our approach is built. \\
+    Section~\ref{sec:domainadapt} is a formal description of the domain adaptation task, in which
+    the main goals and challenges are highlighted.
     Section~\ref{sec:deeplearning} is an introduction to the basics of Deep Learning,
-    a branch of machine learning concerned with the study and the design of Artificial Neural Network (ANN) models.
+    a branch of machine learning concerned with the study of Artificial Neural Networks (ANNs).
     This section draws heavily on~\cite{Goodfellow-et-al-2016}.
 
     \section{Domain Adaptation}\label{sec:domainadapt}
 
     \paragraph{Introduction}
-    At the core of the majority of machine learning (ML) techniques, there is the optimization of some
-    error (also called loss) function $L(y, \hat{y}; \theta)$, that is a function of the reference output $y$, the output
-    of the model $\hat{y}$, and the parameters of the model $\theta$.
-    \newline
-    Although machine learning draws a lot from optimization methods, there is a seemingly small but profound difference
+    The majority of machine learning (ML) algorithms~\footnote{In the following, we will restrict our discussion of
+    ML algorithms to the subset of supervised learning, represented by algorithms that learns a function $f(\cdot)$
+    mapping an input vector $x$ to an output vector $y = f(x)$.} is based on the minimization (w.r.t.\ the model's parameters)
+    of some function of the model's errors,
+    also called the \textbf{loss function}: $L(y, \hat{y}; \theta)$. Its value depends on the reference output $y$, the model's output
+    $\hat{y}$, and the model's parameters $\theta$. \\
+    At a first glance, one might think that ML is just plain optimization, but actually there is a profound difference
     between the two. In sheer mathematical optimization, we have full access to the function we want to minimize (or maximize),
     while in ML this is not true. In particular, in ML we have access to only a subset of the input-output relationship,
-    and we minimize the error function over this sample in the hope that doing this will also minimize the overall error function
-    (which we don't know).
+    and we minimize the error function over this sample in the hope that doing so will also minimize the overall loss function
+    (which we don't have access to). The loss function over this finite sample is defined as:
     $$ L_{sample}(y, \hat{y}; \theta) = \frac{1}{N} \sum_{i = 1}^{N} L(y_{i}, \hat{y_{i}}; \theta) $$
-    In this framework, what we really care about is \textbf{generalization}, that is the ability of an algorithm to obtain a good
-    performance on samples it has never seen before (such samples are called \textit{test sets}), according to some performance measure $P$.
+    In the ML framework what we care about is \textbf{generalization}, that is the ability of a model to obtain a good
+    performance on samples it has never seen during training (such samples are called \textit{test sets}), according to some performance measure $P$.
+
     \paragraph{The i.i.d.\ assumption}
     A typical assumption done in machine learning settings is that the \textit{training set}
     $( X_{train}, Y_{train} )$\footnote{Here we are focusing only to supervised settings, but the domain adaptation problem
-    can be defined also for unsupervised ones} (the sample used to minimize $L$) and the \textit{test set} $( X_{test}, Y_{test} )$
+    can be defined also for unsupervised scenarios.} (the sample used to minimize $L$) and the \textit{test set} $( X_{test}, Y_{test} )$
     (the sample used to evaluate generalization) are \textbf{i.i.d.}, that is, they are independently sampled from the same
-    underlying distribution $P(X, Y)$. The majority of algorithms operate under this assumption, which is usually a fairly good
-    approximation. But the are cases in which this assumption does not hold, and this causes a significant drop in performance between
-    training and testing.
+    underlying distribution $P(X, Y)$. The fact that samples are drawn independently is what allows us to write the loss function
+    as a summation of a per-sample defined error function.
+    The majority of learning algorithms operate under this assumption, which is usually a fairly good
+    approximation. But there are cases in which this assumption does not hold, and this causes a significant drop between
+    training and test performance.
+
     \paragraph{Motivation}
     Domain Adaptation~\cite{domain-adaptation-review} consists in the design of algorithms that work even when the i.i.d.\
-    assumption does not hold, i.e.\ when the distribution from which training samples are drawn is different from the
-    one at testing time.
-    Domain adaptation has a slightly different terminology with respect to classical ML\@. In particular, the training distribution
-    is called the \textit{source domain} $D_{S}$, while the testing distribution is called the \textit{target domain} $D_{T}$.
-    Typically, we assume that the source data is abundant and labeled, while the target data is only partially labeled, or not at all
-    labeled. Clearly, this is the most interesting setting because solving this problem would allow us to leverage data sets for
+    assumption does not hold~\footnote{Note that the assumption that samples are drawn independently is still valid.},
+    i.e.\ when the distribution from which training samples are drawn is different from the one at testing time. 
+    Domain adaptation has a slightly different terminology w.r.t.\ classical ML\@. In particular, the training distribution
+    is called the \textit{source domain} $D_{S} \sim P_{s}(X, Y)$, while the testing distribution is called the
+    \textit{target domain} $D_{T} \sim P_{t}(X, Y)$.
+    Typically, we assume that the source data is abundant and labeled, while the target data is only partially (or not at all) labeled. \\
+    Clearly, this is the most interesting setting because solving this problem would allow us to leverage data sets for
     which we have lots of labeled data, and at the same time obtain good performance on the data sets we were interested in the first
     place, but which often have few labeled data. This setting goes under the name of \textit{Unsupervised} Domain Adaptation. If instead
     we assume that the target is partially of fully labeled, we talking about \textit{Semi-Supervised} or \textit{Supervised} Domain
-    Adaptation respectively. This work in particular focuses exclusively on the unsupervised setting, which is clearly harder.
+    Adaptation respectively. This thesis work in particular focuses exclusively on the (harder) unsupervised setting.
+
     \paragraph{Domain Adaptation}
-    In machine learning, the joint distribution of data and labels $P(X, Y)$ is, of course, unknown. In domain adaptation,
+    In ML, the joint distribution between data and labels $P(X, Y)$ is unknown. In domain adaptation,
     we call the joint distribution of the source domain $ P_{s}(X, Y) $, while $ P_{t}(X, Y) $ is the joint distribution of
     the target domain. The i.i.d.\ assumption consists in a assuming that $ P_{s}(X, Y) = P_{t}(X, Y) = P(X, Y) $.
     In Domain Adaptation instead, we have $ P_{s}(X, Y) \neq P_{t}(X, Y) $. We can visually see what are the implications
-    of this in figure~\ref{fig:AD-tsne}.
+    of this fact in figure~\ref{fig:AD-tsne}.
     \newline
-    The source data is drawn i.i.d.\ from the source distribution, while the target data is drawn i.i.d.\ from the marginal
-    over $X$ of the target distribution:
+    The source data is drawn i.i.d.\ from the source distribution, while the target data is drawn i.i.d.\ from the target marginal
+    distribution over $X$:
     \begin{align*}
-        S = (X_{s}, Y_{s}) \sim D_{S} = P_{s}(X, Y) \\
-        T = (X_{t}) \sim D_{y} = P_{t}(X)
+        S = {\{(x_{i}, y_{i})\}}_{i=1}^{N} \sim {(D_{S})}^{N} \\
+        T = {\{(x_{i})\}}_{i=1}^{M} \sim {(D_{T}^{X})}^{M}
     \end{align*}
     The goal is to build a classifier $f : X \rightarrow Y$ capable of making correct predictions about the target labels $Y_{t}$:
-    $$ \text{maximize}   P(Y_{t} = \hat{Y_{t}}) $$
+    $$ \theta^{\star} = \max_{\theta} P(Y_{t} = \hat{Y_{t}} | X_{t} ; \theta) $$
     Where $\hat{Y_{t}} = f(X_{t})$ are the labels predicted by the classifier and $Y_{t}$ are the true target labels, which we
-    don't know.
+    don't have access to.
 
     \begin{figure}
         \centering{}
     	\includegraphics[width=\linewidth]{img/AD-alexnet-tsne.png}
-        \caption{t-SNE~\cite{tsne} visualization of the features extracted from the Office dataset using AlexNet. When the source
-        and the target distribution are the same (left), a classifier trained on the source data generalizes very well to the target
-        data. When the i.i.d.\ assumption does not hold (right), generalization performance will be poor.}\label{fig:AD-tsne}
+        \caption{t-SNE~\cite{tsne} visualization of the features extracted from the Office dataset~\cite{office} using AlexNet~\cite{alexnet}.
+        When the source and the target distribution are the same (left), a classifier trained on the source data generalizes very well to the target
+        data. When the i.i.d.\ assumption does not hold (right), the model will generalize poorly.}\label{fig:AD-tsne}
+	\end{figure}
+
+    \paragraph{Object Recognition}
+    In the context of object recognition, the domain shift can be very large and it can have a variety
+    of different causes, which can also interact between each other in nonlinear ways. Factors such as background, lighting
+    conditions, resolution, translation, scale and rotation, all contribute to the shift in distribution between source and target.
+    
+    \begin{figure}[h!]
+        \centering
+
+        \begin{subfigure}{\linewidth}
+        	\includegraphics[width=.3\linewidth]{img/amazon-scissor.png}\label{fig:amazon-scissor}\hfill
+        	\includegraphics[width=.3\linewidth]{img/dslr-scissor.png}\label{fig:dslr-scissor}\hfill
+            \includegraphics[width=.3\linewidth]{img/webcam-scissor.png}\label{fig:webcam-scissor}
+        \end{subfigure}
+
+        \caption{Examples of visual domain shift. The shift between the left and center images is clearly
+            due to the background. The shift between the center right images is due to resolution. In fact, the center
+            image was taken with a high-resolution camera, while the right image was taken with a webcam.}\label{fig:domain-shift-office}
 	\end{figure}
 
     \section{Deep Learning}\label{sec:deeplearning}
 
     \paragraph{Introduction}
-    Artificial Intelligence (AI) technologies have to deal with the fact that current machines are very different from humans.
-    In fact, it can be said that they are the opposite. Many tasks that require effort and reasoning for a human to accomplish,
-    such as chess, are pretty easy for machines, because such problems can be encoded into a set of formal rules that machines
-    are particularly suited to deal with. Conversely, other kinds of tasks that a human doesn't even need to think about
-    are tremendously difficult for machines. These are the tasks we find so easy to perform that we don't even manage to explain how
-    we achieve them. Encorporating the intuition and common sense that humans give for granted is one of the holy grails of AI.\@
+    Current processors' hardware substrate is very different from the biological substrate of the human brain. In fact, they are opposite.
+    For this reason, many tasks that require effort and reasoning for a human to accomplish, such as chess, are pretty straightforward for machines,
+    for those problems can be encoded into a set of formal rules which can then be solved algorithmically.
+    Conversely, other kinds of tasks that humans do without even thinking about them are tremendously difficult for machines to accomplish.
+    We find so easy to perform this kind of tasks that we don't even manage to explain how we do them. Encorporating the intuition
+    and common sense that humans give for granted into machines is one of the holy grails of AI.\@
     \paragraph{History}
     At first, it was believed that intelligent behavior could be achieved by hard-coding knowledge into the system by means
     of some formal language. Reasoning would then be achieved through the use of inference rules, such as Modus Ponens.
-    These were the so-called \textbf{Expert Systems}.
+    These were the so-called \textbf{Expert Systems}~\cite{Jackson_1986}.
     It was soon evident that the number of formal rules needed for intelligent behavior exceeds by several orders of magnitude
     the number of rules one could possibly write by hand.
     \newline
@@ -107,7 +134,7 @@
     In the following, we will provide a very concise introduction to the main concepts of deep learning. In particular, we will cover only a
     tiny subset of the whole field: \textit{feed-forward (convolutional) neural networks} for \textit{supervised learning} (classification).
 	Thus, the setting is the typical one for classification problems: we have a \textit{data set} of $n$ samples, of which the i-th sample
-	is $(X_{i} \in \mathbb{R}^{1 \times n}, Y_{i} \in \{1, 2, \ldots, C\})$, where $X_{i}$ is a row vector of numerical features, and $Y_{i}$
+	is $(X_{i} \in \mathbb{R}^{K}, Y_{i} \in \{1, 2, \ldots, C\})$, where $X_{i}$ is a \textit{tensor}, that is a multi-dimensional array, and $Y_{i}$
 	is the class label for sample $i$. The task is to come up with a model capable of predicting the correct class label $Y^{'}$ for a previously
 	unseen instance $X^{'}$.
 
@@ -143,13 +170,10 @@
 
     \begin{figure}[h!]
         \centering
-        \begin{subfigure}{\textwidth}
+        \begin{subfigure}{\linewidth}
             \centering
-        	\includegraphics[width=.4\linewidth]{img/non-linearly-separable.png}\label{fig:nonlinearsep}
-        \end{subfigure}
-        \begin{subfigure}{\textwidth}
-            \centering
-        	\includegraphics[width=.4\linewidth]{img/linearly-separable.png}\label{fig:linearsep}
+        	\includegraphics[width=.5\linewidth]{img/non-linearly-separable.png}\label{fig:nonlinearsep}\hfill
+        	\includegraphics[width=.5\linewidth]{img/linearly-separable.png}\label{fig:linearsep}
         \end{subfigure}
         \footcaption{The original data (left) is not linearly separable, that is, there does not exists a hyperplane capable of
             separating the red curve from the blue curve. The transformation $h = \sigma(Wx + b)$ project the input x into a new space
