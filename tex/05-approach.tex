@@ -3,25 +3,50 @@
 \begin{document}
     \chapter{Approach}\label{chap:approach}
 
+    In this chapter, the Domain Multiplicative-Fusion (DMF) Network is presented. This technique builds
+    upon three methods which are described in the following:
+    \begin{enumerate}
+        \item We employ a modification of Grad-CAM~\cite{gradcam} to generate what we call \textit{domainness maps},
+            which tell us on a per-feature-map basis which regions in the image are discriminative between
+            source and target domains.
+        \item Spatial Pyramid Pooling~\cite{sppooling} is used to perform pooling at multiple levels in a parallel fashion.
+            This can be useful when localization of the object in the image is an issue.
+            It also generates fixed-length representations regardless of the input size.
+        \item We combine information in the feature maps with information in the domainness maps multiplicatively,
+            as in~\cite{multfusion}. The maps inhibit domain-specific regions (regions that are discriminative for the two domains)
+            and enhance domain-generic regions, thereby reducing the domain shift between source and target.
+    \end{enumerate}
+
     \section{Grad-CAM}
-    Gradient-weighted Class Activation Mapping~\cite{gradcam}. Technique for producing visual explanations
-    about why a Convolutional Neural Network opted for a certain class. The technique is applicable to a wide
-    variety of tasks, ranging from image captioning to visual question answering to reinforcement learning, and
-    also to a wide variety of CNN architectures. In the context of this work, we'll use this technique to
-    produce visuals for an object classification task.
-    This technique was designed as a visualization tool to better understand how CNNs reason and to improve
+
+    \paragraph{Motivation}
+
+    At testing time, when a convolutional network looks at an image, there are certain regions that causes higher activations
+    than others, thus contributing the most to the final classification choice. Clearly, we hope such regions to be exactly
+    those containing the object of the class output by the network.
+
+    Grad-CAM (Gradient-weighted Class Activation Mapping)~\cite{gradcam} is a method for visualizing the spatial locations
+    in an image that contributed the most to the CNN's classification choice.
+    The technique is applicable to a wide variety of tasks, ranging from image captioning to visual question answering to
+    reinforcement learning, and also to a wide variety of CNN architectures. \\
+    In the context of this thesis work, we use this technique to produce visuals for an object recognition task.
+    Grad-CAM was designed as a visualization tool to better understand how CNNs reason and to improve
     their interpretability, which is a fundamental property to have for AI systems that wants to be deployed
     in the real world.
-    We extracted the Grad-CAM visualization from the last convolutional layer because, as also the authors
-    or the technique note, the last convolutional layer is the best compromise between high-level semantics and spatial
-    localization. The former is a general property of deep learning models: the further the layer from the input,
-    the more high-level and meaningful features one can expect to be extracted. The latter is a property of
-    Convolutional Feature Maps, which are designed to retain as much spatial information as possible about
-    the data.
-    The high-level architecture of the method can be seen in the following figure.
+
+    \paragraph{How it works}
+
+    Although visualizations can be extracted at any layer of the hierarchy, we opted for the last convolutional layer
+    because, as the authors note, it is the best compromise between high-level semantics and spatial localization.
+    The former is a general property of deep learning models: the further the layer from the input,
+    the more high-level and meaningful the features extracted are. The latter is a property of
+    convolutional feature maps, which are designed to retain as much spatial information as possible about
+    the input. Fully-connected layers down the hierarchy do not have this property. \\
+    The high-level architecture of the method can be seen in the following figure:
 
 	\begin{figure}[h!]
-    	\includegraphics[width=\linewidth]{img/gradcam-architecture.png}
+        \centering{}
+        \makebox[\linewidth][c]{\includegraphics[width=1.4\linewidth]{img/gradcam-architecture.png}}
 	    \caption{Grad-CAM Architecture, taken from~\cite{gradcam}}\label{fig:gradcam-architecture}
 	\end{figure}
 
@@ -31,11 +56,11 @@
     last layer neurons with respect to some loss function, like cross-entropy. Instead, in Grad-CAM, we manually
     create these gradients. In particular, we set them to one for the neuron corresponding to the class of interest,
     while all the other neurons are set to zero.
-    $$ \frac{\partial y^{c}}{\partial \theta_{output}} = [0, 0, \ldots 1, 0, 0, \ldots] $$
-    Then, we backward propagate these gradients through the network untill
-    the last convolutional layer, where the Grad-CAM map is created. Assume that the last convolutional layer feature maps are
+    $$ \frac{\partial y^{c}}{\partial \theta_{output}} = [0, 0, \ldots , 1, 0, 0, \ldots] $$
+    Then, we backward propagate these gradients through the network until
+    the last convolutional layer, where the Grad-CAM map is created. Assuming that the last convolutional layer feature maps are
     in $ \mathbb{R}^{K \times H \times W} $, where $H$ and $W$ are respectively the height and the width of each feature
-    map, and $K$ is the number of feature maps. The map that will be generated is thus in $\mathbb{R}^{H \times W}$.
+    map, and $K$ is the number of feature maps (depth). The map that will be generated is thus in $\mathbb{R}^{H \times W}$.
     The generation procedure has multiple steps:
     \begin{enumerate}
         \item Compute the weight of each feature maps. We want a number measuring how much each filter contributed to
@@ -55,35 +80,63 @@
     \end{enumerate}
     The $ReLU()$ function simply set to zero all the negative values. The Grad-CAM technique uses this function to retain only
     the values that have a \textit{positive} influence on the class decision.
-    Once the Grad-CAM map is generate, it is then upsampled to the pixel space using bi-linear interpolation, then a heatmap
+    Once the Grad-CAM map is generated, it is then upsampled to the pixel space using bi-linear interpolation, then a heatmap
     is generated from the values and the heatmap is point-wise multiplied with the output of the Guided-BackPropagation
-    procedure~\cite{guidedbackprop}, to produce the final result Guided-GradCAM.\@
+    procedure~\cite{guidedbackprop}, to produce the final result called Guided-GradCAM.\@
 
     \subsection{Grad-CAM for domain localization}
-    In the previous section, we described the full Guided-GradCAM procedure, but in our approach we integrated only a subset of it.
-    In particular, we used only Grad-CAM maps, and we retained the full \textit{per feature-map activations}, instead of summing them.
+
+    To perform domain localization with Grad-CAM, we replaced the 1000-units softmax of ImageNet CNNs with a single sigmoid
+    unit, and we fine-tuned the network to perform a binary classification between source and target samples. Our rationale is
+    that by applying Grad-CAM to this binary network we are able to determine which regions
+    in the image are \textit{domain-specific} (information contained only in one domain and not in the other) or
+    \textit{domain-generic} (information shared between domains). Having this clue on a \textit{per-feature-map} basis,
+    we are able to make source and target more similar at the representational level, by removing domain-specific locations and
+    enhancing domain-generic ones. \\
+
+    \begin{figure}[h!]
+        \centering
+
+        \begin{subfigure}{\linewidth}
+        	\includegraphics[width=.3\linewidth]{img/a1.png}\label{fig:amazon-1}\hfill
+        	\includegraphics[width=.3\linewidth]{img/a-ad-a-1.png}\label{fig:amazon-amazon-1}\hfill
+            \includegraphics[width=.3\linewidth]{img/a-ad-d-1.png}\label{fig:amazon-dslr-1}
+        \end{subfigure}
+
+        \begin{subfigure}{\linewidth}
+        	\includegraphics[width=.3\linewidth]{img/d1.png}\label{fig:dslr-1}\hfill
+        	\includegraphics[width=.3\linewidth]{img/d-ad-d-1.png}\label{fig:dslr-dslr-1}\hfill
+            \includegraphics[width=.3\linewidth]{img/d-ad-a-1.png}\label{fig:dslr-amazon-1}
+        \end{subfigure}
+
+        \caption{Examples of domainness maps. Both rows have: (left) original image, (center) domain-specific map,
+            (right) domain-generic map. We can see that the domain-specific map captures information contained in one domain
+            but not in the other, in this case the background. Domain-generic maps instead captures information shared between
+            domains, in this case the objects themselves.}\label{fig:domain-shift-office}
+	\end{figure}
+
+    Our domainness maps are actually generated using only a subset of the full Guided-GradCAM procedure.
+    In particular, we used only Grad-CAM maps (without Guided-BackPropagation), and we retained the full
+    \textit{per feature-map activations}, instead of summing them across depth.
     Namely, in our method, equation~\ref{eq:gradcamMaps} becomes:
     \begin{equation}\label{eq:gradcamDomain}
         M^{c} = ReLU \left( w_{k}^{c} F^{k} \right) \in \mathbb{R}^{K \times H \times W}
     \end{equation}
-    That is, instead of summarizing the information into a single map by summing over depth, we retain the information about how each
-    feature map contributes to the decision of the class. This is crucial, as it enables us to enhance and inhibit features with a
-    greater precision. This procedure is applied to a convolutional network with a binary classifier on top of it, trained to discriminate
-    source samples from target ones. Our rationale is that by applying Grad-CAM to this binary network we are able to determine regions
-    in the image that are \textit{domain-specific} or \textit{domain-generic}: that is information that is contained only in the source
-    (or target) domain and information that is shared between the two domains. Having this information, we should be able to make source
-    and target more similar at the representational level. In order to do this, we will make use of another technique described in the
-    next section.
-
+    That is, instead of summarizing into a single map, we retain information about how each filter contributed to the decision
+    of the class. This is crucial, as it enables us to enhance and inhibit filters with a greater precision.
+    
     \section{Spatial Pyramid Pooling}
     \paragraph{Motivation}
-    Convolutional Networks can be thought of as composed by two parts, a feature extractor and a classifier. The former is a
-    series of convolutional layers, while the latter is simply a Multi-Layer Perceptron.
-    Each convolutional layer has three sequential stages: the convolution, the non-linearity, and the pooling.
+    Convolutional Networks can be thought of as composed by two parts: a feature extractor followed by a classifier.
+    The former is a hierarchy of convolutional layers---the latter is a Multi-Layer Perceptron on top of the former's output.
+    Each convolutional layer has three sequential stages: the convolution operation, the non-linear activation, and the non-linear
+    down-sampling operation (pooling).
     The pooling operation is needed to reduce the dimensionality of the data and to improve robustness with respect to input distortion.
-    Usually, max pooling is used, that is a sliding window of a certain size in which for each window, the pixel with the max value is taken
-    as output. Other summary statistics were employed in the literature, such as average pooling or sum pooling.
-    After the last pooling layer, the resulting 3D tensor of dimension $C \times H \times W$ is flattened into a 1D tensor with $C * H * W$,
+    Usually, max pooling is used, that is a sliding window of a certain size in which for each window,
+	the pixel with the max value is taken as output.
+	Other summary statistics were employed in the literature, such as average pooling or sum pooling, but max pooling was found to
+	work best in the context of object recognition~\cite{maxpooling}.
+    After the last pooling layer, the resulting 3D tensor of dimension $C \times H \times W$ is flattened into a 1D tensor of dimension $C * H * W$,
     and a series of fully-connected layers is placed on top of this layer. The are at least two problems with this architecture:
     \begin{itemize}
         \item Convolutional layers can deal with images of different sizes, but they will also produce outputs of different sizes. Fully-connected
@@ -123,11 +176,16 @@
     $window = \ceil*{\frac{14}{4}} = 4$ and $stride = \floor*{\frac{14}{4}} = 3$. Figure~\ref{fig:sppnet} has a SPP layer with three levels:
     $(4 \times 4) (2 \times 2) (1 \times 1)$. We can easily compute the (fixed) output dimension of this layer. For instance, with the VGG16
     network, the output size is: $(512*4*4) + (512*2*2) + (512*1*1) = 10752$, so we can place a fully-connected layer on top of this SPP and
-    we can be sure that the dimension will be the same regardless of the input size.
+    we can be sure that the dimension will be the same regardless of the input size. \\
 
-    \section{Domain-Multiplicative Fusion}
-    \subsection{Motivation}
-    The architecture of our network, which we called \textbf{Domain-Multiplicative Fusion (DMF)} is inspired from this work~\cite{multfusion}.
+	As a final note, during our experiments we observed that the size of the window in the pooling operation is an important factor to take care of
+	when dealing with a domain shift problem. Usually, one takes whatever dimension was chosen for the baseline network (AlexNet or VGG)
+	and keeps it fixed. However, we adopted the original SPP strategy with the aim of testing different window sizes and we effectively
+	verified that results can vary significantly based on this parameters. As a consequence, this parameter should be carefully optimized.
+
+    \section{Domain Multiplicative-Fusion}
+    \paragraph{Motivation}
+    The architecture of our network, which we called Domain Multiplicative-Fusion (DMF) is inspired from this work~\cite{multfusion}.
     In particular, the authors of~\cite{multfusion} explored two different ways to combine information from multiple sources into the same
     CNN architecture, in the context of action recognition. The first technique, which they called \textit{Feature Amplification},
     consists in an element-wise (hadamard) product between two sources of information: the first was the CNN feature maps and the second
@@ -177,15 +235,3 @@
     network trained first and then used to generate Grad-CAM maps, and the object classification network trained after using the maps.
 
 \end{document}
-
-
-
-
-
-
-
-
-
-
-
-
