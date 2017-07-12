@@ -84,7 +84,7 @@
     is generated from the values and the heatmap is point-wise multiplied with the output of the Guided-BackPropagation
     procedure~\cite{guidedbackprop}, to produce the final result called Guided-GradCAM.\@
 
-    \subsection{Grad-CAM for domain localization}
+    \subsection{Grad-CAM for domain localization}\label{subsec:gradcam-domainness}
 
     To perform domain localization with Grad-CAM, we replaced the 1000-units softmax of ImageNet CNNs with a single sigmoid
     unit, and we fine-tuned the network to perform a binary classification between source and target samples. Our rationale is
@@ -183,7 +183,7 @@
 	and keeps it fixed. However, we adopted the original SPP strategy with the aim of testing different window sizes and we effectively
 	verified that results can vary significantly based on this parameters. As a consequence, this parameter should be carefully optimized.
 
-    \section{Domain Multiplicative-Fusion}
+    \section{Domain Multiplicative-Fusion}\label{sec:dmf-network}
     \paragraph{Motivation}
     The architecture of our network, which we called Domain Multiplicative-Fusion (DMF) is inspired from this work~\cite{multfusion}.
     In particular, the authors of~\cite{multfusion} explored two different ways to combine information from multiple sources into the same

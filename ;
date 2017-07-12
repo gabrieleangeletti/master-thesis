@@ -89,6 +89,7 @@
     For each of the two variations the classes are perfectly balanced, namely each one has the same number of samples. Each dataset
     has two domains, hence it defines two domain adaptation tasks: the first is train on domain 1 and test on domain 2 and the second
     is the opposite.
+
     In figure~\ref{fig:icw-samples}, we can see a random sample of images from the dataset.
 
     \begin{figure}[h!]
@@ -97,100 +98,22 @@
         \caption{Random sample from the iCubWorld dataset.}\label{fig:icw-samples}
     \end{figure}
 
-    \paragraph{Domain Shift}
-    The first thing to do is to verify if the iCW dataset actually represents a domain adaptation task. That is,
-    we should measure the domain shift in the dataset. In the domain adaptation literature, this is usually
-    done in the following way: we train a classifier on 80\% of the source domain, and we test it both on the
-    remaining 20\% and on the target domain. The absolute difference of performance gives a
-    rough quantitative measure of the domain shift. Intuitively, the more the performance difference,
-    the more the two datasets were generated from different distributions. The following process is employed
-    to measure this domain shift. First, image features are extracted at the second fully-connected layer of the
-    VGG16. This gives a feature vector of 4096 entries for each image. We then run a Linear Support Vector Machine
-    classifier~\cite{fan2008liblinear} on top of these features. Results for both iCW translation and iCW scale
-	are shown in Table~\ref{table:domain-shift}.
+    \subsubsection{iCW Translation: Results}
 
-	\begin{table}[!ht]
-		\centering{}
-		\begin{tabular}{l c c c}
-			\toprule
-                     & S (80\%) $\rightarrow$ S (20\%)  & S (80\%) $\rightarrow$ T & Difference \\
-			\midrule
-			Left 1 $\rightarrow$ Left 2   & 99.67  & 59.23 & 40.44 \\
-			Left 2 $\rightarrow$ Left 1   & 99.83  & 62.47 & 37.36 \\
-			Scale 1 $\rightarrow$ Scale 2 & 100.00 & 26.54 & 73.46 \\
-			Scale 2 $\rightarrow$ Scale 1 & 99.67  & 40.98 & 58.69 \\
-
-		\end{tabular}
-		\caption{iCW domain shift measure.~\textit{S} stands for Source.~\textit{T} stands for Target.
-			\textit{X} $\rightarrow$ \textit{Y} means that the SVM is trained on \texit{X} and tested on \textit{Y}.}\label{table:domain-shift}
-	\end{table}
-
-	In both datasets, there is a clear domain shift between the two domains. Also, by looking at Table~\ref{table:domain-shift},
-	we can also see for instance that the task Scale 1 $\rightarrow$ Scale 2 is much more difficult than the opposite one. This
-	might be because Scale 2 images contains information that helps the classifier also on Scale 1, but the opposite is not true.
-
-	Having seen that there is indeed a domain shift between the domains, in the next paragraph we compare our method both with
-	standard transfer learning techniques and with the state-of-the-art Domain-Adversarial Networks~\cite{DANN}.
-
-    \subsubsection{Results}
-	In the following tables we report the results of our experiments. We can see that our method DMF outperforms
-	all the other techniques by a significant margin.
-
-    \begin{table}[!ht]
+    \begin{table}[h!]
         \centering{}
-        \begin{tabular}{l c c c}
+        \begin{tabular}{l c c r}
             \toprule
-                     & Left 1 $\rightarrow$ Left 2 & Left 2 $\rightarrow$ Left 1 & Average \\
-            \midrule
-            Softmax  & $50.41 \pm{} 0.98$ & $54.01 \pm{} 0.59$ & 52.21 \\
-            Spp      & $63.55 \pm{} 1.49$ & $61.15 \pm{} 0.69$ & 62.35 \\
-            DANN     &  63.20             &  42.93             & 53.07 \\
-        \textbf{DMF} & $\mathbf{67.35 \pm{} 0.97}$ & $\mathbf{61.75 \pm{} 0.54}$ & \textbf{64.55} \\
-            \bottomrule
-        \end{tabular}
-        \caption{iCW Translation Alexnet Results.}
-    \end{table}
-
-    \begin{table}[!ht]
-        \centering{}
-        \begin{tabular}{l c c c}
-            \toprule
-                     & Left 1 $\rightarrow$ Left2 & Left 2 $\rightarrow$ Left 1 & Average \\
+            Network  & \textit{Left 1} \rightarrow{} \textit{Left 2} & \textit{Left 2} \rightarrow{} \textit{Left 1} & Average \\
             \midrule
             Softmax  & $62.15 \pm{} 0.94$ & $64.74 \pm{} 0.92$ & 63.44 \\
             Spp      & $75.14 \pm{} 1.09$ & $75.91 \pm{} 1.26$ & 75.53 \\
-            DANN     &  76.43             &  54.60             & 65.52 \\
-        \textbf{DMF} & $\mathbf{78.17 \pm{} 0.66}$ & $\mathbf{77.30 \pm{} 0.80}$ & \textbf{77.73} \\
+            DANN     & $76.43$            & 54.60              & 65.52 \\
+            DMF & $78.17 \pm{} 0.66$ & $77.30 \pm{} 0.80$ & 77.73 \\
             \bottomrule
         \end{tabular}
-        \caption{iCW Translation VGG16 Results.}
     \end{table}
 
-    \begin{table}[!ht]
-        \centering{}
-        \begin{tabular}{l c c c}
-            \toprule
-                     & Left 1 $\rightarrow$ Left2 & Left 2 $\rightarrow$ Left 1 & Average \\
-            \midrule
-            Softmax  & $18.20 \pm{} 0.71$ & $27.45 \pm{} 1.23$ & 22.83 \\
-            Spp      & $25.77 \pm{} 0.88$ & $30.52 \pm{} 0.60$ & 28.15 \\
-        \textbf{DMF} & $\mathbf{29.68 \pm{} 1.52}$ & $\mathbf{31.43 \pm{} 0.49}$ & \textbf{30.56} \\
-            \bottomrule
-        \end{tabular}
-        \caption{iCW Scale Alexnet Results.}
-    \end{table}
-    
-    \begin{table}[!ht]
-        \centering{}
-        \begin{tabular}{l c c c}
-            \toprule
-                     & Left 1 $\rightarrow$ Left 2 & Left 2 $\rightarrow$ Left 1 & Average \\
-            \midrule
-            Softmax  & $30.85 \pm{} 0.67$ & $49.88 \pm{} 0.73$ & 40.36 \\
-            Spp      & $35.69 \pm{} 1.08$ & $49.85 \pm{} 1.38$ & 42.77 \\
-        \textbf{DMF} & $\mathbf{42.16 \pm{} 1.09}$ & $\mathbf{50.69 \pm{} 0.96}$ & \textbf{46.42} \\
-            \bottomrule
-        \end{tabular}
-        \caption{iCW Scale VGG16 Results.}
-    \end{table}
+    \subsubsection{iCW Scale: Results}
+
 \end{document}
