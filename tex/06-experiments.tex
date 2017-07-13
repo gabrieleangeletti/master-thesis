@@ -28,7 +28,7 @@
 
     \section{Experiment settings}
 
-    \subsection{Baseline Networks}
+    \subsection{Baseline Networks}\label{subsec:networks}
     In our experiments we use two baseline networks. The first is \textit{Alexnet}~\cite{alexnet}, winner of the ILSVRC 2012 competition
     and the responsible for the recent deep learning revolution in computer vision. The paper introduced many interesting innovations, most
     notably the use of Graphics Processing Units (GPUs) to train neural networks with millions of parameters at large scale, a method
@@ -132,9 +132,10 @@
 	Having seen that there is indeed a domain shift between the domains, in the next paragraph we compare our method both with
 	standard transfer learning techniques and with the state-of-the-art Domain-Adversarial Networks~\cite{DANN}.
 
-    \subsubsection{Results}
+    \subsubsection{Results}\label{subsubsec:results}
 	In the following tables we report the results of our experiments. We can see that our method DMF outperforms
 	all the other techniques by a significant margin.
+    \newline
 
     \begin{table}[!ht]
         \centering{}
@@ -193,4 +194,31 @@
         \end{tabular}
         \caption{iCW Scale VGG16 Results.}
     \end{table}
+
+    We also carry out another experiment to assess if DMF is actually reducing the domain shift.
+    Namely, we train a binary classifier to tell which distribution (source or target) samples were drawn from.
+    Intuitively, if the distributions are the same, we should expect a classification accuracy of $\sim 50\%$,
+    whether if the distributios are different, we should expect an accuracy of $\sim 100\%$.
+    This is indeed the case, as we've verified experimentally. What we would like to verify however, is if
+    DMF actually reduces the performance of such a binary classifier. 
+
+    \begin{table}[!ht]
+        \centering{}
+        \begin{tabular}{l c c}
+            \toprule
+            & iCW Translation & iCW Scale \\
+            \midrule
+            ImageNet & 96.67 & 97.87 \\
+            Softmax  & 98.87 & 99.20 \\
+        \textbf{DMF} & $\mathbf{93.03}$ & $\mathbf{95.28}$ \\
+            \bottomrule
+        \end{tabular}
+        \caption{Domain shift reduction caused by DMF\@. The binary classifier is a Linear SVM trained on top of
+        features extracted from VGG16. Lower is better.}\label{table:domain-shift-dmf}
+    \end{table}
+    
+    As the results in Table~\ref{table:domain-shift-dmf}
+    shows, DMF actually reduces the performance of the classifier (albeit by a little amount), hence making the
+    two distributions more similar.
+
 \end{document}

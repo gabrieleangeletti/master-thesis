@@ -3,29 +3,56 @@
 \begin{document}
     \chapter{Comparison}\label{chap:comparison}
 
-    In the ICW dataset, our method was able to achieve state-of-the-art performance with respect to the
-    Domain-Adversarial Neural Network (DANN). This was due in part to the fact that we discovered that greater
-    performance can be achieved by carefully tuning the dimension of the last pooling layer, and in part to
-    the improvement of the DMF that was capable of providing a representation to the higher layers in which
-    the two domains where made more similar. We also argue that tuning the dimension of the latest pooling layer
-    can be an effective way of incorporating \textit{prior knowledge} about the dataset at hand. For instance, if
-    we know that the object will cover the majority of the image and there will not be much noise, we can go with a
-    smaller window size to identify more details of the object. Conversely, if the object is but a small part of the
-    image, and there is a lot of noise, like background etc., a bigger window size might be appropriate, in order to
-    perform disturbance rejection.
-    \newline
-    Another thing we noted during our experiments, that is related to the previous point is that DMF needs the dimension
-    of the last pooling layer to be carefully tuned. In particular, we noted that if this is not the case, than the DMF
-    extension to the original architecture is not always able to provide an improvement in terms of performance. Also,
-    source and target domains need to be \textit{different but related}. We tested our method with domains for which the
-    domain shift was very large, and our method performed poorly. However, this is also true for the other state-of-the-art
-    methods for domain adaptation.
-    \newline
-    Another point of comparison with the state-of-the-art regards the size of the model: that is, the number of parameters.
-    The DMF architecture has a much smaller number of parameters w.r.t.\ DANN\@.
-    If we take for example the AlexNet architecture, which DANN authors extended in their paper, the number of parameters is huge,
-    in the order of 70 million parameters only in the fully-connected part of the architecture. The DMF architecture that we employed
-    was about 13 million parameters in the fully-connected part, that is about a fifth. This leads to a much lesser memory consumption
-    and greater efficiency from a computational view-point. These are important considerations given the ever growing size of deep
-    learning models and from an industry perspective.
+    \section{Comments on DMF}\label{sec:dmf-comments}
+
+    The results of our experiments on the iCW dataset show that our method improves the object localization invariance
+    of CNNs, thereby improving the performance of object recognition systems. The method can be used as an extension
+    of any CNN, with no requirements on the baseline architecture. DMF can be seen as an attention mechanism that
+    allows the network to focus mostly on the regions of an image that are shared across domains, thus providing higher
+    layers with a representation in which two domains are more similar.
+
+    We also argue that tuning the dimension of pooling layers can be an effective way of including \textit{prior knowledge}
+    about the localization of a dataset. If objects are centered and cover the majority of the image, there won't be much
+    noise, and a smaller window size will retain more useful information. Conversely, if the object covers a small region
+    of the image, there will be much noise. In those cases, a bigger window size might be appropriate, in order to drop
+    useless information. We run experiments with the Spp configuration as described in~\ref{subsec:networks}, changing the
+    dimension of the Spatial Pyramid Pooling layer. We see that in those cases where there are large object transformations,
+    in particular translation and scale, a different dimension of the last pooling layer can make a difference in
+    classification accuracy by as much as $\sim 10\%$. The pooling operation throws away a lot of information about the location
+    in which a feature occurs. Therefore we speculate that carefully tuning the dimension of pooling layers, as demonstrated
+    by our experiments, has the potential to bring many improvements in object recognition and detection systems
+    based on CNNs.
+
+    \section{State-of-the-art comparison}
+
+    \subsection{Accuracy}
+    In Section~\ref{subsubsec:results} we compare our DMF method against the state-of-the-art approach of Domain-Adversarial
+    Neural Networks (DANN)~\cite{DANN}. DMF outperforms DANN on all the variants of the iCW dataset by a significant margin.
+    This is due in part to our discussion in Section~\ref{sec:dmf-comments} about tuning the dimension of the last max pooling
+    layer, and in part to the fact that DMF improves object localization in the presence of large object transformation, through
+    the introduction of what can be thought of as an attention mechanism. However, we are not saying that DMF is a better method
+    than DANN, but only that it works better in those cases when object localization is an issue. In fact, we test both DMF and
+    DANN on a popular benchmark dataset in the domain adaptation literature, the Office 31 dataset~\cite{office}. This dataset
+	contains objects from 31 categories belonging to three different domains: (1) Images taken from amazon.com, (2) Images
+	taken with a high-resolution camera, (3) Images taken with a low-resolution webcam. In this setting, the domain shift is
+	mainly caused by changes in background and resolution, while there are no changes in object localization, the object being
+	almost always at the center of the image. In this adaptation task, DMF was not able to outperform DANN on average, albeit
+	it provides better performance on four out of the six adaptation tasks. This proves that DMF, while performing best in the
+	presence of a strong object localization, is also capable of providing almost state-of-the-art performance when this is
+	not the case. As a last note, we find that DMF works only in those cases where source and target domains are
+	\textit{different but related}. In fact, we test DMF on datasets with a huge domain shift, and we find that our method
+	performs poorly. However, this is also true for the other approaches. This shows that adaptation between completely
+	different domains is still out of reach for current CNNs.
+    
+    \subsection{Size}
+	Another point of comparison between DMF and DANN regards the size of the model, i.e.\ the number of parameters. Both methods
+	are extensions of baseline networks, but since DMF does not reuse the entire architecture, it has a much lower number of parameters.
+	The size (in number of parameters) of the two baseline networks used in this thesis work is 60 Mln for Alexnet and 138 Mln for
+	VGG16. DANN replaces the last layer of the baseline network and it also adds two fully-connected layers for the domain
+    regressor component. This leads to a size almost equal to that of the original model, 61 Mln for Alexnet and 139 Mln for VGG16.
+    DMF instead, replaces all the fully-connected layers in the baseline network with layers of lower dimension, thereby reducing
+    the size of the model by a lot. In fact, DMF size is 24.5 Mln for Alexnet and 125.5 Mln for VGG16. For Alexnet in particular,
+    DMF size is almost one third the size of the original model and that of DANN\@. This leads to a much better memory footprint
+    and greater efficiency from a computational view-point.
+
 \end{document}
