@@ -21,15 +21,15 @@
 
     In computer vision in particular, state-of-the-art approaches for tasks such as image recognition,
     object detection and image segmentation all have Convolutional Neural Networks (CNNs)~\cite{lecun-89e} at their core,
-	a specialization of the more general feedforward network architecture to deal with data with a grid-like topology,
-    like images.
+	which are a specialization of the more general feedforward network architecture designed to deal with data characterized
+    by a grid-like topology.
 
-    Like the majority of machine learning technologies, also deep learning relies on the i.i.d.\ assumptions,
-    a set of assumptions drawn from statistical learning theory~\cite{Vapnik1998} by which the training and the test sets are generated
-    from the same data generating process, i.e.\ they came from the same distribution. \\
+    Like the majority of machine learning technologies, also deep learning relies on the i.i.d.\ assumptions, namely
+    a set of hypotheses drawn from statistical learning theory~\cite{Vapnik1998} by which the training and the test sets are generated
+    from the same data generating process, i.e.\ by the same distribution. \\
     Neural Networks are known for their great generalization capabilities. In fact, when trained on very large
     datasets, such as ImageNet~\cite{imagenet}, CNNs can be used to extract meaningful features from new datasets, on top of which
-    a linear classifier (e.g. Linear SVM or Logistic Regression) can be successfully trained.
+    a linear classifier (e.g. Linear SVM or Logistic Regression~\cite{fan2008liblinear}) can be successfully trained.
     This method goes under the name of Transfer Learning~\cite{transfer-learning}. \\
 
     Transfer learning works well when the training and test sets came from very similar distributions. When this condition
@@ -37,17 +37,18 @@
     Hence, techniques are needed to deal with such cases. \\
 	The problem of dealing with settings in which the i.i.d.\ assumptions
 	do not hold is known as Domain Adaptation~\cite{domain-adaptation-review}, in which we seek to minimize generalization error
-	in those situations in which there is a distribution shift between the training set
-	(called source domain in domain adaptation terminology) and the test set (target domain). \\
-    A satisfying solution to this problem would be very appealing, because it would mean being able to train offline huge
-	models on very large datasets,
-    and having them generalize well when deployed on a real-world scenario. Imagine for instance a mobile app in which users can
-    take photos, which should be analyzed (e.g.\ classified) by the app in some way. These photos are likely to come from a different
-    distribution from that of ImageNet. Having a model perform well on this target domain from the first use can represent an
-	advantage from a user experience perspective. \\
+	in those situations in which there is a significant shift between the training distribution
+    (called \textit{source domain} in the domain adaptation terminology) and the test distribution (called \textit{target domain}). \\
+    Domain adaptation has important practical consequences, as solving this problem would imply being able to train offline models
+    on huge dataset, and have them generalize well when deployed on the real-world.
+    A typical scenario is that of a mobile app in which users take photos that are to be analyzed (e.g.\ classified, segmented, \ldots) by
+    an algorithm. These pictures are likely to come from a different distribution than that of ImageNet for instance, and also are likely
+    to be different between different users.
+    The possibility of having a model (trained offline) capable of generalizing to these kinds of situations represents a practical, and
+    useful, application of domain adaptation. \\
 
-    This work is about designing techniques to deal with situations in which plain transfer learning does not work well.
-	In particular, we focused on those cases where the domain shift is caused by object transformations, such as
+    This thesis work is about designing techniques to deal with cases in which plain transfer learning does not work well.
+	In particular, we focus on those cases where the domain shift is caused by object transformations, such as
     translation and scale. This is because we are mainly interested in robotics applications, in which a robot
     might take pictures from very different angles and viewpoints---a situation which is very different from that of
     the majority of image recognition datasets, in which the object always appears at the center of the image. \\

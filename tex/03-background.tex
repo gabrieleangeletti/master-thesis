@@ -7,8 +7,8 @@
     technologies upon which our approach is built. \\
     Section~\ref{sec:domainadapt} is a formal description of the domain adaptation task, in which
     the main goals and challenges are highlighted.
-    Section~\ref{sec:deeplearning} is an introduction to the basics of Deep Learning,
-    a branch of machine learning concerned with the study of Artificial Neural Networks (ANNs).
+    Section~\ref{sec:deeplearning} is an introduction to the basics of deep learning,
+    a branch of machine learning concerned with the study of artificial neural networks (ANNs).
     This section draws heavily on~\cite{Goodfellow-et-al-2016}.
 
     \section{Domain Adaptation}\label{sec:domainadapt}
@@ -16,15 +16,16 @@
     \paragraph{Introduction}
     The majority of machine learning (ML) algorithms~\footnote{In the following, we will restrict our discussion of
     ML algorithms to the subset of supervised learning, represented by algorithms that learns a function $f(\cdot)$
-    mapping an input vector $x$ to an output vector $y = f(x)$.} is based on the minimization (w.r.t.\ the model's parameters)
+    mapping an input vector $x$ to an output vector $y$ parameterized by $\theta$: $y = f(x; \theta)$.}
+    is based on the minimization (w.r.t.\ the model's parameters)
     of some function of the model's errors,
     also called the \textbf{loss function}: $L(y, \hat{y}; \theta)$. Its value depends on the reference output $y$, the model's output
     $\hat{y}$, and the model's parameters $\theta$. \\
     At a first glance, one might think that ML is just plain optimization, but actually there is a profound difference
     between the two. In sheer mathematical optimization, we have full access to the function we want to minimize (or maximize),
     while in ML this is not true. In particular, in ML we have access to only a subset of the input-output relationship,
-    and we minimize the error function over this sample in the hope that doing so will also minimize the overall loss function
-    (which we don't have access to). The loss function over this finite sample is defined as:
+    and we minimize the error function over this sample in the hope that doing so will also minimize the overall loss function,
+    which we don't have access to. The loss function over this finite sample is defined as:
     $$ L_{sample}(y, \hat{y}; \theta) = \frac{1}{N} \sum_{i = 1}^{N} L(y_{i}, \hat{y_{i}}; \theta) $$
     In the ML framework what we care about is \textbf{generalization}, that is the ability of a model to obtain a good
     performance on samples it has never seen during training (such samples are called \textit{test sets}), according to some performance measure $P$.
@@ -43,9 +44,9 @@
     \paragraph{Motivation}
     Domain Adaptation~\cite{domain-adaptation-review} consists in the design of algorithms that work even when the i.i.d.\
     assumption does not hold~\footnote{Note that the assumption that samples are drawn independently is still valid.},
-    i.e.\ when the distribution from which training samples are drawn is different from the one at testing time. 
+    i.e.\ when the distribution from which training samples are drawn is different from the one at test time.
     Domain adaptation has a slightly different terminology w.r.t.\ classical ML\@. In particular, the training distribution
-    is called the \textit{source domain} $D_{S} \sim P_{s}(X, Y)$, while the testing distribution is called the
+    is called the \textit{source domain} $D_{S} \sim P_{s}(X, Y)$, while the test distribution is called the
     \textit{target domain} $D_{T} \sim P_{t}(X, Y)$.
     Typically, we assume that the source data is abundant and labeled, while the target data is only partially (or not at all) labeled. \\
     Clearly, this is the most interesting setting because solving this problem would allow us to leverage data sets for
@@ -58,8 +59,8 @@
     In ML, the joint distribution between data and labels $P(X, Y)$ is unknown. In domain adaptation,
     we call the joint distribution of the source domain $ P_{s}(X, Y) $, while $ P_{t}(X, Y) $ is the joint distribution of
     the target domain. The i.i.d.\ assumption consists in a assuming that $ P_{s}(X, Y) = P_{t}(X, Y) = P(X, Y) $.
-    In Domain Adaptation instead, we have $ P_{s}(X, Y) \neq P_{t}(X, Y) $. We can visually see what are the implications
-    of this fact in figure~\ref{fig:AD-tsne}.
+    In Domain Adaptation instead, we have $ P_{s}(X, Y) \neq P_{t}(X, Y) $. We can visualize what the implications
+    of this fact are in figure~\ref{fig:AD-tsne}.
     \newline
     The source data is drawn i.i.d.\ from the source distribution, while the target data is drawn i.i.d.\ from the target marginal
     distribution over $X$:
@@ -83,7 +84,14 @@
     \paragraph{Object Recognition}
     In the context of object recognition, the domain shift can be very large and it can have a variety
     of different causes, which can also interact between each other in nonlinear ways. Factors such as background, lighting
-    conditions, resolution, translation, scale and rotation, all contribute to the shift in distribution between source and target.
+    condition, resolution, translation, scale and rotation, all contribute to the shift in distribution between source and target.
+    The goal of an object recognition system is twofold. Firstly, it is to find the factors that explain variation the data.
+    Secondly, it is to disentangle the factors that are specific to one domain, e.g.\ the background, from the factors that are shared across
+    domains, e.g.\ the objects themselves.
+    A human is capable of performing this task accurately and reliably in a matter of milliseconds, but it has been beyond the
+    reach of computer vision and machine learning algorithms for decades. We hope that the method presented in this thesis work
+    provides a step in the right direction in order to improve object recognition systems and to provide promising directions
+    of future research.
     
     \begin{figure}[h!]
         \centering
@@ -95,19 +103,24 @@
         \end{subfigure}
 
         \caption{Examples of visual domain shift. The shift between the left and center images is clearly
-            due to the background. The shift between the center right images is due to resolution. In fact, the center
+            due to the background. The shift between the center and right images is due to resolution. In fact, the center
             image was taken with a high-resolution camera, while the right image was taken with a webcam.}\label{fig:domain-shift-office}
 	\end{figure}
 
     \section{Deep Learning}\label{sec:deeplearning}
 
     \paragraph{Introduction}
-    Current processors' hardware substrate is very different from the biological substrate of the human brain. In fact, they are opposite.
+    The hardware substrate of current digital information processors is very different from the biological substrate of the human brain.
+    In fact, they are the opposite~\cite{anusuya2010superficial}.
     For this reason, many tasks that require effort and reasoning for a human to accomplish, such as chess, are pretty straightforward for machines,
     for those problems can be encoded into a set of formal rules which can then be solved algorithmically.
-    Conversely, other kinds of tasks that humans do without even thinking about them are tremendously difficult for machines to accomplish.
+    Conversely, other kinds of tasks that humans do without even consciously reasoning about them are tremendously difficult for machines to accomplish.
     We find so easy to perform this kind of tasks that we don't even manage to explain how we do them. Encorporating the intuition
-    and common sense that humans give for granted into machines is one of the holy grails of AI.\@
+    and common sense that humans give for granted into machines is one of the holy grails of AI.\@ In this context, one of the main
+    innovations of deep learning, and of representation learning in general, in that of letting the machine learn by itself what the
+    model of the world should be, instead of manually encoding knowledge into it. At the time of this writing, this is the most promising
+    direction towards artificial intelligence.
+
     \paragraph{History}
     At first, it was believed that intelligent behavior could be achieved by hard-coding knowledge into the system by means
     of some formal language. Reasoning would then be achieved through the use of inference rules, such as Modus Ponens.
@@ -117,11 +130,19 @@
     \newline
     This led to a major shift from deductive systems to inductive ones, where the machine itself \textit{learns} to extract
     knowledge from data. By seeing a lot of input-output examples in the form $y = f(x)$ it would figure out the relationship $f$ itself.
-    This was the beginning of \textbf{Machine Learning} (ML). In classical ML the input representation is still hand-crafted though.
-    For instance, a classical ML image classification algorithm does not take in input the raw pixels of the image, but some other
-    representation created by an ad-hoc procedure. This was a drawback because the majority of efforts went into the
-    \textit{feature engineering} process itself, and in many cases this is more an art than a science.
-    \newline
+    This was the beginning of \textbf{Machine Learning} (ML). In ML, the algorithm does not see the raw data itself, but a higher level
+    representation of it. Formally, a function $\phi(x)$ is provided which takes in input the raw data $x$ and outputs a representation of $x$ in the
+    form of a numerical vector. This vector is then used to find the relationship between $x$ and $y = f(\phi(x); \theta)$.
+    In classical ML, the input representation is hand-crafted, that is the function $\phi(x)$ is manually designed by scientists
+    and engineers often over the course of decades. This was a major drawback for many reasons:
+    \begin{itemize}
+        \item There is little transfer between different domains, such as vision and speech. That is, a function $\phi(x)$ that is found
+            to work well on one specific domain, is not able to generalize to other ones as well.
+        \item The majority of efforts and resources go into the feature engineering process itself. In most cases, it is more an art
+            than a science.
+        \item The goodness of the features entirely depends on human instinct. Many important features may simply be ignored or not
+            discovered at all by scientist.
+    \end{itemize}
     The natural evolution of this is to not only let the program learn the input-output relation $y = f(x)$,
     but also the input representation as well. That is, the algorithm learns both a suitable representation of the input $\phi(x)$, and then
     the relationship between this representation and the output $y = f(\phi(x))$. This research field is called \textbf{Representation Learning}.
@@ -135,16 +156,18 @@
     tiny subset of the whole field: \textit{feed-forward (convolutional) neural networks} for \textit{supervised learning} (classification).
 	Thus, the setting is the typical one for classification problems: we have a \textit{data set} of $n$ samples, of which the i-th sample
 	is $(X_{i} \in \mathbb{R}^{K}, Y_{i} \in \{1, 2, \ldots, C\})$, where $X_{i}$ is a \textit{tensor}, that is a multi-dimensional array, and $Y_{i}$
-	is the class label for sample $i$. The task is to come up with a model capable of predicting the correct class label $Y^{'}$ for a previously
+	is the class label for sample $i$. The task is to provide a model capable of predicting the correct class label $Y^{'}$ for a previously
 	unseen instance $X^{'}$.
 
     \subsection{Feed-Forward Neural Networks}
-    The Feed-Forward Network can be thought of as a general framework in which different layers of processing units are stacked on top
+    The feed-forward network can be thought of as a general framework in which different layers of processing units are stacked on top
     of each other. Each layer implements a function that takes in input the output of the previous layer.\footnote{Note that also the input and
-    the output of the network are considered layers}. A single layer can be viewed either as implementing a vector valued function or
-    as a set of parallel processing units, each of which takes in input the outputs of the units in the previous layer and performs some
-    sort of computation. The name neural networks stem from the fact that these models are loosely inspired by how the human brain works,
-    and in this regards, the parallel processing units in each layer perform a role analogous to that of neurons in the brain.
+    the output of the network are considered layers.} A single layer can be viewed either as implementing a vector valued function or
+    as a set of parallel processing units, each of which takes in input the outputs of the previous layer units, performs some
+    sort of computation, and outputs a scalar value. The name neural networks stem from the fact that these models are loosely inspired
+    by how the human brain works. In this regard, the parallel processing units in each layer perform a role analogous
+    to that of neurons in the brain. However, the similarity between artificial and biological neural networks is very superficial, and
+    NNs should not be seen as an attempt to perfectly mimic the human brain.
     The classical example of a feed-forward network architecture is the MultiLayer-Perceptron (MLP)~\cite{mlp}, in which
     each layer implements an affine mapping of the input followed by an element-wise non-linear function:
 
@@ -182,11 +205,11 @@
 
     \footnotetext{Images taken from: \url{http://colah.github.io/posts/2014-03-NN-Manifolds-Topology/}}
 
-    When we stack a number of such layers one on top of the other, we have a deep network. In particular, the input-output mapping defined by
+    When we stack many such layers one on top of the other, we have a deep network. In particular, the input-output mapping defined by
     a MultiLayer-Perceptron with $n$ layers is recursively defined as:
 
     \begin{equation}
-        \hat{y} = W_{n}(\sigma(W_{n-1}(\sigma(W_{n-2}(\ldots W_{1} x + b_{1} \ldots)) + b_{n-2})) + b_{n-1}) + b_{n} 
+        \hat{y} = W_{n}(\sigma(W_{n-1}(\sigma(W_{n-2}(\ldots \sigma(W_{1} x + b_{1}) \ldots)) + b_{n-2})) + b_{n-1}) + b_{n} 
     \end{equation}
 
     With $W_{1}, b_{1}$ denoting the parameters of the first layer and $W_{n}, b_{n}$ the parameters of the last layer. The dimension of the
@@ -197,7 +220,7 @@
     The output vector $\hat{y}$ has one entry for each class, and it can be thought of as the scores the network assigns to different classes.
     Since this vector can assume arbitrary values, it is typically followed by a function which converts the raw class scores into a
     probability distribution over classes, that is that normalizes the scores so that they sum to one.
-    The most popular function used in the deep learning literature is the \textbf{softmax} function:
+    The most popular function used in the deep learning literature to do that is the \textbf{softmax} function:
 
     \begin{equation}
         softmax(z) = \left[ \frac{e^{z_{1}}}{\sum_{i = 1}^{c} e^{z_{i}}} , \ldots , \frac{e^{z_{c}}}{\sum_{i = 1}^{c} e^{z_{i}}} \right], z = \left[ z_{1}, \ldots ,z_{c}  \right]
@@ -206,7 +229,7 @@
     Thus, the complete input-output mapping of the MLP is:
 
     \begin{equation} \label{eq:MLPequation}
-        \hat{y} = softmax(W_{n}(\sigma(W_{n-1}(\ldots W_{1} x + b_{1} \ldots)) + b_{n-1}) + b_{n})
+        \hat{y} = softmax(W_{n}(\sigma(W_{n-1}(\ldots \sigma(W_{1} x + b_{1}) \ldots)) + b_{n-1}) + b_{n})
     \end{equation}
 
     Now that we've defined our model, we need two more things: a definition of error and a procedure to learn from such errors.
@@ -224,9 +247,11 @@
     \end{equation}
 
     It is easy to see that for all the entries for which $y_{i} = 0$, only the second term contributes to the loss, and for the entry
-    for which $y_{i} = 1$ (the true label), only the first term contributes to the loss. The previous equation is the cross-entropy loss for a single
-    input sample. In deep learning (and more generally in machine learning), the loss is usually averaged over a number of samples,
-    called a \textit{mini-batch}. In this case, the loss becomes:
+    for which $y_{i} = 1$ (the true label), only the first term contributes to the loss. It can be shown that this expression is the result
+    of applying the maximum likelihood principle to the point estimation in the space of functions that is performed by neural networks. That is,
+    the cross-entropy loss function represents the log-probability of classes as given by the model.
+    The previous equation is the cross-entropy loss for a single input sample. In deep learning (and more generally in machine learning),
+    the loss is usually averaged over a number of samples, called a \textit{mini-batch}. In this case, the loss becomes:
 
     \begin{equation}
         L(y, \hat{y}; \theta) = - \frac{1}{N} \sum_{i = 1}^{N} \sum_{j = 1}^{c} \left[ y_{i, j} \log(\hat{y_{i, j}}) + (1 - y_{i, j})\log(1 - \hat{y_{i, j}})  \right]
@@ -236,32 +261,31 @@
     procedure, that is how to modify the model's parameters in order to reduce future errors.
 
     \paragraph{The Learning Algorithm}
-    In Deep Learning, the most popular technique for minimizing the loss function is \textbf{gradient descent}. The basic idea
+    In deep learning, the most popular technique for minimizing the loss function is \textbf{gradient descent}. The basic idea
     is that the gradient of the loss function with respect to the model parameters gives us the direction of maximum increase
     of the loss. Hence, by updating the parameters in the opposite direction, we are effectively minimizing the error.
     Formally, the learning rule is the following:
 
-    \begin{equation}
+    \begin{equation}\label{eq:gradientdescent}
         \theta^{k+1} = \theta^{k} - \alpha \nabla L(y, \hat{y}; \theta)
     \end{equation}
 
     Where $\alpha$ is a hyper-parameter of the algorithm that controls the step size in the direction of steepest descent. It is called the
     \textbf{learning rate} in the literature. This parameter is of fundamental importance in the optimization procedure, as its value often
-    makes the difference between convergence and divergence of the minimization process. The previous was the most basic version of gradient
-    descent. Other techniques have been developed in recent years to overcome the major limitations of this scheme. The momentum~\cite{momentum}
-    method provides a sort of short-term memory of recent updates to the optimizer and it helps smoothing the trajectory of minimization and
-    improving speed of convergence. More recent methods like Adam~\cite{adam} are more sophisticated, as they employs per-parameter
-	adaptive learning rates.
+    makes the difference between convergence and divergence of the minimization process. Equation~\eqref{eq:gradientdescent} was the most basic
+    version of gradient descent. Other techniques have been developed in recent years to overcome the major limitations of this scheme.
+    The momentum~\cite{momentum} method provides a sort of short-term memory of recent updates to the optimizer and it helps smoothing the
+    trajectory of minimization and improving speed of convergence. More recent methods like Adam~\cite{adam} are more sophisticated, as
+    they employs per-parameter adaptive learning rates.
 	\newline
-    Now we know how to modify the network's parameters
-    in order to minimize the loss function, but how do we compute the gradients? It turns out there is a very computationally efficient
-    algorithm which allows us to compute the partial derivatives of the loss with respect to the model's parameters. This algorithm is called
-    \textbf{backpropagation}.
+    Now we know how to modify the network's parameters in order to minimize the loss function, but how do we compute the gradients?
+    It turns out there is a very computationally efficient algorithm which allows us to compute the partial derivatives of the loss with
+    respect to the model's parameters. This algorithm is called \textbf{backpropagation}.
 
     \paragraph{The BackPropagation Algorithm}
     The BackPropagation algorithm~\cite{backprop} computes partial derivatives in a feed-forward neural network\footnote{Although this
 	technique is mainly used in the context of neural networks optimization, the algorithm is general and can be used to differentiate
-	arbitrary functions}.
+	arbitrary functions.}.
 	\newline
 	The reference value $y$ is defined with respect to the output layer of the network, so it is easy to compute the gradient of this
 	layer. Hidden layers instead do not have target values, so their gradient cannot be computed directly. But we know that hidden layers
@@ -271,14 +295,15 @@
 	in previous layers. The chain rule of calculus basically states that if we have a nested function
     $ z = f(y) = f(g(x)) $, the derivative of z w.r.t.\ x is equal to:
     $$ \frac{dz}{dx}  = \frac{dz}{dy} \frac{dy}{dx} $$
-    This is similar to the structure of equation~\ref{eq:MLPequation}. The full learning procedure of a MultiLayer-Perceptron is showed in Algorithm~\ref{algbackpropagation}.
+    This is similar to the structure of equation~\eqref{eq:MLPequation}. The full learning procedure of a MultiLayer-Perceptron is showed in Algorithm~\ref{algbackpropagation}.
 
     \begin{algorithm}
     \caption{MultiLayer-Perceptron learning algorithm. \newline
     The \textbf{forward} function computes the output of the network given input $x$: $\hat{y} = f(x; \theta)$.
-    The \textbf{backward} function computes the gradients of the loss function with respect to the model parameters. It starts with the gradient of the output layer, and then it propagates it backwards.
+    The \textbf{backward} function computes the gradients of the loss function with respect to the model parameters. It starts with
+    the gradient of the output layer, and then it propagates it backwards.
     The \textbf{update} function updates the parameters of the network according to the gradient descent update rule.
-    The three functions must always be called in the exact order: forward \rightarrow{} backward \rightarrow{} update}\label{algbackpropagation}
+    The three functions must always be called in this exact order: forward \rightarrow{} backward \rightarrow{} update}\label{algbackpropagation}
     \begin{algorithmic}[1]
 
         \Require{$net$, the network}
@@ -319,12 +344,13 @@
     \subsection{Convolutional Neural Networks}\label{subsec:convnets}
     As we saw in the previous section, in the standard feed-forward net each layer is composed by an affine mapping followed by some non-linearity.
     But this is not the only way in which layers can be designed. There exists several kinds of feed-forward architectures, and in this section
-    we will see what is arguably the most popular and successful example of specialization: the Convolutional Neural Network (CNN).
+    we will see what is arguably the most popular and successful example of specialization: the Convolutional
+    Neural Network (abbreviated as CNN or Convnet).
     \newline
     CNNs are a specialization of the feed-forward network, particularly suited to work with data in which spatial information is important, like
     time series in one dimension and images in two dimensions. If we have to train a standard feed-forward net to classify images, the first
     thing we would do is to transform the 2D image into a 1D vector by concatenating together all the pixel values. By doing this we are
-    clearly losing the spatial information relating the pixel to one another. Conv nets instead are capable of fully exploit the spatial
+    clearly losing the spatial information relating the pixel to one another. Convnets instead are capable of fully exploit the spatial
     correlations between pixels.
     \newline
     More formally, a Convolutional Neural Network is a feed-forward network in which at least one layer uses the convolution operation.
@@ -348,13 +374,14 @@
         F(i, j) = (I \ast K)(i, j) = \sum_{w} \sum_{h} I(i + w, j + h) K(w, h)
     \end{equation}
     Where $I$ is the input image, $K$ is the convolution kernel, and $F$ is the output, also called \textit{feature map}. The full
-    feature map is defined by applying the previous operation for $i = 1, \ldots, w$ and for $j = 1, \ldots, h$, that is, the kernel
+    feature map is defined by applying the previous operation for $i = \{1, \ldots, w\}$ and for $j = \{1, \ldots, h\}$, that is, the kernel
     is a window that slides over the entire image, computing the weighted combination at each pixel location. The kernel can be thought
     of as a specialized filter, which produces high responses to certain features of the input. For instance, a filter can produce a
     high response when it sees a vertical edge, or a blotch, and a low response in any other case.
 
     \subsubsection{Learning the kernels}
-    The exists many techniques based on convolution and kernel to compute edges or other features in the input image (Ex: Sobel operator).
+    The exists many techniques based on convolution and kernels to compute edges or other features in the input image, like the Sobel
+	filter~\cite{gao2010improved} for instance.
     The main difference with those approaches is that in Conv nets, the filters are not hand-crafted, but instead the network \textbf{learns}
     the values of the filters. In particular, in each convolutional layer, several kernels are computed in parallel, with each one specializing
     in the detection of a different feature. As a consequence of the hierarchical nature of deep learning, filters in low level layers specialize
@@ -366,31 +393,31 @@
         \caption{Visualizing Conv net filters, taken from~\cite{zeiler13}}\label{fig:conv-filters}
 	\end{figure}
 
-    In the next section we will see the other building block of CNNs, the \textit{pooling} operation.
+    In the next section we will see the other main building block of CNNs, namely the \textit{pooling} operation.
 
     \subsubsection{Pooling in Convolutional Networks}
     In CNNs, a convolutional layer is usually followed by a pooling layer, that is a way of performing dimensionality reduction
     and improving the network overall robustness to input transformation. In particular, a pooling layer replaces the output of the
-    network at pixel location $(i, j)$ with a summary statistics of nearby pixels. Many statistics are employed in the deep learning
-    literature (refs). The most popular is arguably Max Pooling (ref), in which the summary statistic is simply that maximum value.
-    The following depition shows how Max Pooling works:
+    network at pixel location $(i, j)$ with a summary statistics of nearby pixels. Many statistics are usually employed in the deep learning
+    literature~\cite{scherer2010evaluation}. The most popular is arguably max pooling~\cite{nagi2011max}, in which the summary statistic
+	is simply the maximum value. Figure~\ref{fig:max-pooling} shows how max pooling works.
 
     \begin{figure}[h!]
         \centering
     	\includegraphics[width=.6\linewidth]{img/max-pooling.png}
-        \caption{Max Pooling operation.}\label{fig:max-pooling}
+        \caption{The max pooling operation.}\label{fig:max-pooling}
 	\end{figure}
 
-    It has been shown (ref) that the spatial pooling operation improves invariance to small translations in the input, i.e.\ if the
+    It can be shown that the spatial pooling operation improves invariance to small translations in the input, i.e.\ if the
     input image is translated some pixels to the left or right, the output is still the same. This is a nice property to have when
-    dealing with images, because we aren't usually interested in knowing precisely where a feature, we are only concerned with whether
-    the feature is actually present or not.
+    dealing with images, because we aren't usually interested in knowing precisely where a feature is located, but we are only concerned
+	with whether the feature is actually present or not.
 
     \subsubsection{Advantages of Convolutional Networks}
-    Convolutional Neural Networks have some unique features that make them particularly efficient, from both a computational and a
-    computer vision perspective. The three main advantages of CNNs with respect to standard feed-forward networks are:
+    Convolutional Neural Networks have some unique features that make them particularly efficient, both from a computational viewpoint
+	and from a computer vision perspective. The three main advantages of CNNs with respect to standard feed-forward networks are:
     \begin{itemize}
-        \item \textbf{Sparse Interactions}: the feed-forward net is composed of affine layers $Wx + b$ where there is a different
+        \item \textbf{Sparse Interactions}: the feed-forward net is composed of affine layers $\sigma(Wx + b)$ where there is a different
             parameter for each pair of input-output units. Thus, each layer of the net has a number of parameters that is $O(m \times n)$,
             where $m$ is the number of input units and $n$ the number of output units. CNNs instead has a number of parameters that
             is $O(k \times w \times h)$, where $k$ is the number of filters and $w, h$ are respectively width and height of each filter.
@@ -399,13 +426,15 @@
         \item \textbf{Parameter Sharing}: As we said in the previous point, feed-forward nets have a different parameter for each pair
             of input-output units. In CNNs instead, each kernel is re-used over the entire input.
             This can be viewed as a parameter sharing technique, in which we have $m$ kernels with the constraint that they have to
-            have the same parameters. Of course, in practice, we have only one kernel that is used as a sliding window over the input,
-            but thinking of it as a use of parameter sharing can give more insights into how CNNs work.
+            share parameters. Of course, in practice, we have only one kernel that is used as a sliding window over the input,
+            but thinking of it as a use of parameter sharing can give more insights into the effectiveness of CNNs.
 
         \item \textbf{Translation equivariance}: The convolution operation is naturally equivariant to translation, i.e.\ if the input is
             translated by a small amount of pixels to the left or right, the output is translated by the same amount.  This is clearly a
-            desirable property when analizying images. This operation is not naturally invariant to other input transformations such as 
-            scaling and rotation, but CNNs as a whole can achieve such properties with appropriate mechanisms.
+            desirable property when dealing with images. This operation is not naturally invariant to other input transformations such as 
+            scaling and rotation, but CNNs as a whole can achieve such properties with appropriate mechanisms, albeit CNNs invariance
+			is valid only for small transformations. In fact, making CNNs invariant to larger transformations is one of the main motivations
+			behind this work.
     \end{itemize}
 
 \end{document}
