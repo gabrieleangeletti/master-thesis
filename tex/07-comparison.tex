@@ -47,11 +47,11 @@
     \subsection{Size}
 	Another point of comparison between DMF and DANN regards the size of the model, i.e.\ the number of parameters. Both methods
 	are extensions of baseline networks, but since DMF does not reuse the entire architecture, it has a much lower number of parameters.
-	The size (in number of parameters) of the two baseline networks used in this thesis work is 60 Mln for Alexnet and 138 Mln for
+	The size (in number of parameters) of the two baseline networks used in this thesis work is $60 \times 10^{6}$ for Alexnet and $138 \times 10^{6}$ for
 	VGG16. DANN replaces the last layer of the baseline network and it also adds two fully-connected layers for the domain
-    regressor component. This leads to a size almost equal to that of the original model, 61 Mln for Alexnet and 139 Mln for VGG16.
+    regressor component. This leads to a size almost equal to that of the original model, $61 \times 10^{6}$ for Alexnet and $139 \times 10^{6}$ for VGG16.
     DMF instead, replaces all the fully-connected layers in the baseline network with layers of lower dimension, thereby reducing
-    the size of the model by a lot. In fact, DMF size is 24.5 Mln for Alexnet and 125.5 Mln for VGG16. For Alexnet in particular,
+    the size of the model by a lot. In fact, DMF size is $24.5 \times 10^{6}$ for Alexnet and $125.5 \times 10^{6}$ for VGG16. For Alexnet in particular,
     DMF size is almost one third the size of the original model and that of DANN\@. This leads to a much better memory footprint
     and greater efficiency from a computational view-point.
 

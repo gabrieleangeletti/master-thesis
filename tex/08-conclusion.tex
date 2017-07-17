@@ -8,13 +8,13 @@
     on a different-but-related dataset, for which no labels are available. We describe the foundations
     upon which our method builds, and state-of-the-art approaches present in the literature. We provide
     experimental evidence across a range of datasets and network architectures that our method is an
-    improvement over standard architectures, and in some cases also achieved state-of-the-art performance,
+    improvement over standard architectures, and it is also able to achieve state-of-the-art performance,
     while using very few parameters with respect to other methods. We argue that our work points out the
     importance of localizing \textit{domain-generic} and \textit{domain-specific} regions at a representational
     level, and that the use of this information can make the source representation more similar to the target
     representation.
 
-    \section{Lessons learned}
+    \section{Take home messages}
     We performed many experiments, and tried lots of approaches, and we learned many things along the way.
     One thing is that if we carefully tune the dimension of the latest pooling layer, we can achieve much
     greater performance (in fact, in some settings, we achieve a $10\%$ improvement in test accuracy).
@@ -25,7 +25,7 @@
     We also learned that domain adaptation is a hard problem that is yet to be solved: despite the huge
     successes that deep learning methods have achieved in computer vision over the last few years, a model
     trained on one dataset and tested on a different one continues to yield very low performance. Some
-    also argue (ref rethinking generalization) that deep networks do not in fact learn semantically
+    also argue~\cite{DBLP:journals/corr/ZhangBHRV16} that deep networks do not in fact learn semantically
     meaningful features, but instead they simply memorize entire datasets. With the advent of deep learning,
     we traded interpretability for performance, and we still know very little about how these models really work.
     Much more work needs to be done in deepen our understanding of deep neural networks.
@@ -36,5 +36,9 @@
     network that is embedded in the network. In this way, instead of having two learning processes that are
     carried out in a sequential manner, one would have a single end-to-end architecture jointly trained in one
     step. Besides reducing the computational burden of our method, we also argue that this would increase the
-    quality of the produced maps.
+    quality of the produced maps. \\
+    Currently, we are only relying on the domain localization to reduce the domain shift. This means that our
+    approach can be easily integrated with other existing DA solutions. In this way, we would not only create a
+    procedure that only attend domain generic areas but it is also able to reduce possible domain gaps still present
+    in those areas.
 \end{document}
