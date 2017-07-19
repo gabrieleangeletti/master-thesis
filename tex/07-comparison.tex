@@ -3,11 +3,11 @@
 \begin{document}
     \chapter{Comparison}\label{chap:comparison}
 
-    \section{Comments on DMF}\label{sec:dmf-comments}
+    \section{Comments on LoAd}\label{sec:load-comments}
 
     The results of our experiments on the iCW dataset show that our method improves the object localization invariance
     of CNNs, thereby improving the performance of object recognition systems. The method can be used as an extension
-    of any CNN, with no requirements on the baseline architecture. DMF can be seen as an attention mechanism that
+    of any CNN, with no requirements on the baseline architecture. LoAd can be seen as an attention mechanism that
     allows the network to focus mostly on the regions of an image that are shared across domains, thus providing higher
     layers with a representation in which two domains are more similar.
 
@@ -26,33 +26,33 @@
     \section{State-of-the-art comparison}
 
     \subsection{Accuracy}
-    In Section~\ref{subsubsec:results} we compare our DMF method against the state-of-the-art approach of Domain-Adversarial
-    Neural Networks (DANN)~\cite{DANN}. DMF outperforms DANN on all the variants of the iCW dataset by a significant margin.
-    This is due in part to our discussion in Section~\ref{sec:dmf-comments} about tuning the dimension of the last max pooling
-    layer, and in part to the fact that DMF improves object localization in the presence of large object transformation, through
-    the introduction of what can be thought of as an attention mechanism. However, we are not saying that DMF is a better method
-    than DANN, but only that it works better in those cases when object localization is an issue. In fact, we test both DMF and
+    In Section~\ref{subsubsec:results} we compare our LoAd method against the state-of-the-art approach of Domain-Adversarial
+    Neural Networks (DANN)~\cite{DANN}. LoAd outperforms DANN on all the variants of the iCW dataset by a significant margin.
+    This is due in part to our discussion in Section~\ref{sec:load-comments} about tuning the dimension of the last max pooling
+    layer, and in part to the fact that LoAd improves object localization in the presence of large object transformation, through
+    the introduction of what can be thought of as an attention mechanism. However, we are not saying that LoAd is a better method
+    than DANN, but only that it works better in those cases when object localization is an issue. In fact, we test both LoAd and
     DANN on a popular benchmark dataset in the domain adaptation literature, the Office 31 dataset~\cite{office}. This dataset
 	contains objects from 31 categories belonging to three different domains: (1) Images taken from amazon.com, (2) Images
 	taken with a high-resolution camera, (3) Images taken with a low-resolution webcam. In this setting, the domain shift is
 	mainly caused by changes in background and resolution, while there are no changes in object localization, the object being
-	almost always at the center of the image. In this adaptation task, DMF was not able to outperform DANN on average, albeit
-	it provides better performance on four out of the six adaptation tasks. This proves that DMF, while performing best in the
+	almost always at the center of the image. In this adaptation task, LoAd was not able to outperform DANN on average, albeit
+	it provides better performance on four out of the six adaptation tasks. This proves that LoAd, while performing best in the
 	presence of a strong object localization, is also capable of providing almost state-of-the-art performance when this is
-	not the case. As a last note, we find that DMF works only in those cases where source and target domains are
-	\textit{different but related}. In fact, we test DMF on datasets with a huge domain shift, and we find that our method
+	not the case. As a last note, we find that LoAd works only in those cases where source and target domains are
+	\textit{different but related}. In fact, we test LoAd on datasets with a huge domain shift, and we find that our method
 	performs poorly. However, this is also true for the other approaches. This shows that adaptation between completely
 	different domains is still out of reach for current CNNs.
     
     \subsection{Size}
-	Another point of comparison between DMF and DANN regards the size of the model, i.e.\ the number of parameters. Both methods
-	are extensions of baseline networks, but since DMF does not reuse the entire architecture, it has a much lower number of parameters.
+	Another point of comparison between LoAd and DANN regards the size of the model, i.e.\ the number of parameters. Both methods
+	are extensions of baseline networks, but since LoAd does not reuse the entire architecture, it has a much lower number of parameters.
 	The size (in number of parameters) of the two baseline networks used in this thesis work is $60 \times 10^{6}$ for Alexnet and $138 \times 10^{6}$ for
 	VGG16. DANN replaces the last layer of the baseline network and it also adds two fully-connected layers for the domain
     regressor component. This leads to a size almost equal to that of the original model, $61 \times 10^{6}$ for Alexnet and $139 \times 10^{6}$ for VGG16.
-    DMF instead, replaces all the fully-connected layers in the baseline network with layers of lower dimension, thereby reducing
-    the size of the model by a lot. In fact, DMF size is $24.5 \times 10^{6}$ for Alexnet and $125.5 \times 10^{6}$ for VGG16. For Alexnet in particular,
-    DMF size is almost one third the size of the original model and that of DANN\@. This leads to a much better memory footprint
+    LoAd instead, replaces all the fully-connected layers in the baseline network with layers of lower dimension, thereby reducing
+    the size of the model by a lot. In fact, LoAd size is $24.5 \times 10^{6}$ for Alexnet and $125.5 \times 10^{6}$ for VGG16. For Alexnet in particular,
+    LoAd size is almost one third the size of the original model and that of DANN\@. This leads to a much better memory footprint
     and greater efficiency from a computational view-point.
 
 \end{document}

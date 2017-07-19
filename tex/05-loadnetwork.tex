@@ -224,7 +224,7 @@
             for each image, we generate a domainness map of the regions that would make the classifier change its decision, from source to target or
             vice-versa. The activations are of the last convolutional layer, which has a more compact and meaningful representation, as the author
             of Grad-CAM also pointed out.
-        \item The domainness maps are integrated into a final CNN that performs object classification on the source data. The final architecture can be seen in figure~\ref{fig:dmf-architecture}.
+        \item The domainness maps are integrated into a final CNN that performs object classification on the source data. The final architecture can be seen in figure~\ref{fig:load-architecture}.
             From the input layer to the last convolutional layer, the architecture is the same as a standard CNN\@. Then, the output
             feature maps are duplicated: one copy is kept as in its original form, the other is multiplicatively fused with the domainness map.
             We use Spatial Pyramid Pooling for each of the two branches, motivated by our discussion in Section~\ref{sec:spatialpyramidpooling}.
@@ -233,8 +233,8 @@
 
     \begin{figure}[h!]
         \centering{}
-        \includegraphics[width=\linewidth]{./img/dmf-architecture.png}
-        \caption{Local Adaptive CNN.}\label{fig:dmf-architecture}
+        \includegraphics[width=\linewidth]{./img/load-architecture.png}
+        \caption{Local Adaptive CNN.}\label{fig:load-architecture}
     \end{figure}
 
 \end{document}
